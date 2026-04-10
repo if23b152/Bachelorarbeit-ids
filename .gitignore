@@ -1,0 +1,35 @@
+# Betriebssysteme
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs und temporäre Dateien
+*.log
+*.tmp
+*.bak
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Grosse Capture-Dateien optional lokal halten
+*.pcap
+*.pcapng
+
+# Ergebnisse koennen lokal bleiben, Platzhalter werden versioniert
+results/raw/*
+results/processed/*
+results/tables/*
+results/screenshots/*
+!results/raw/.gitkeep
+!results/processed/.gitkeep
+!results/tables/.gitkeep
+!results/screenshots/.gitkeep
