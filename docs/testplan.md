@@ -1,20 +1,64 @@
 # Testplan
 
-## Erste Phase
+## Ziel der ersten Testphase
 
-1. Baseline-Kommunikation zwischen Kali und Windows pruefen
-2. Paketmitschnitt des Basisverkehrs erstellen
-3. Sichtbare Windows-Dienste identifizieren oder gezielt aktivieren
-4. Erste kleine und reproduzierbare Scan-/Exploit-Liste definieren
-5. Spaeter Vorbereitung der IDS-Systeme Snort, Suricata und Zeek
+Die erste Phase dient nicht der vollstaendigen IDS-Evaluierung, sondern dem sauberen Aufbau einer stabilen und nachvollziehbaren Laborbasis. Zunaechst werden wenige, einfache und reproduzierbare Tests durchgefuehrt.
 
-## Ziel der ersten Phase
+## Erste Phase: Baseline und Grundfunktion
 
-In der ersten Phase wird die technische Grundlage fuer spaetere IDS-Tests geschaffen. Dabei steht nicht die Auswertung von Alerts im Vordergrund, sondern die reproduzierbare Kommunikation zwischen Angreifer- und Zielsystem sowie die Dokumentation des aktuellen Baseline-Zustands.
+### Bereits umgesetzt
+1. Kali-Linux-VM als Angreifersystem festgelegt
+2. Windows-VM als erstes Zielsystem eingerichtet
+3. NAT- und Host-Only-Netzwerk konfiguriert
+4. Erreichbarkeit per Ping erfolgreich geprueft
+5. erster Nmap-Host-Discovery-Scan durchgefuehrt
+6. erster Paketmitschnitt erstellt
 
-## Naechste Schritte
+### Als Naechstes geplant
+1. Windows-Victim vollstaendig dokumentieren
+2. Snapshot der aktuellen Windows-VM erstellen
+3. Debian-Sensor-VM aufsetzen
+4. Sensor-VM in das bestehende Host-Only-Lab-Netz integrieren
+5. Snort, Suricata und Zeek zunaechst in Standardkonfiguration vorbereiten
+6. Ubuntu spaeter als zweites Zielsystem ergaenzen
 
-- Windows-Dienste fuer gezielte Tests festlegen
-- Linux-Victim vorbereiten
-- Capture- und Log-Sammlung vereinheitlichen
-- Testfaelle mit eindeutigen IDs dokumentieren
+## Grundsaetze der Testdurchfuehrung
+
+Die Tests sollen zunaechst schrittweise durchgefuehrt werden:
+
+- ein Test nach dem anderen
+- sauber dokumentiert
+- mit klarer Trennung zwischen Angriffsziel und Messsystem
+- mit Fokus auf Vergleichbarkeit und Reproduzierbarkeit
+
+Komplexere Testreihen mit Wiederholungen, hoeherer Last oder Variationen werden erst in einer spaeteren Phase ergaenzt.
+
+## Erste Testarten
+
+Die erste kleine Baseline-Testreihe umfasst:
+
+1. Ping zwischen Kali und Windows
+2. Host Discovery mit Nmap
+3. einfacher Service-Scan mit Nmap
+4. Paketmitschnitt des erzeugten Verkehrs
+
+Diese Tests dienen als Ausgangsbasis fuer spaetere IDS-Auswertungen.
+
+## Zweite Phase
+
+Nach Aufbau der Sensor-VM sollen folgende Schritte folgen:
+
+1. Snort in Standardkonfiguration testen
+2. Suricata in Standardkonfiguration testen
+3. Zeek in Standardkonfiguration testen
+4. Verhalten der drei Systeme dokumentieren
+5. Ergebnisse nach Alert, verdaechtigem Log-Eintrag und Zeitverhalten auswerten
+
+## Spaetere Erweiterungen
+
+In einer spaeteren Phase sollen zusaetzlich folgen:
+
+- Ubuntu als zweites Victim
+- Vergleich zwischen Windows- und Linux-Zielsystem
+- speziell angepasste IDS-Konfigurationen
+- weitere reproduzierbare Exploit-Szenarien
