@@ -62,3 +62,15 @@ In einer spaeteren Phase sollen zusaetzlich folgen:
 - Vergleich zwischen Windows- und Linux-Zielsystem
 - speziell angepasste IDS-Konfigurationen
 - weitere reproduzierbare Exploit-Szenarien
+
+## 16.04: des weiteren Vorgehens
+
+Nachdem die Debian-Sensor-VM erfolgreich in das interne Lab-Netz integriert wurde und ein erster Mitschnitt des Verkehrs zwischen Kali und Windows möglich war, folgt als nächster Schritt die Installation des ersten IDS auf der Sensor-VM.
+
+Geplante Reihenfolge:
+1. Suricata in Standardkonfiguration installieren und testen
+2. Verhalten dokumentieren
+3. danach Snort in getrenntem Testlauf vorbereiten
+4. später Zeek ergänzen
+
+Die IDS-Lösungen sollen dabei nicht parallel, sondern nacheinander unter möglichst gleichen Bedingungen untersucht werden.

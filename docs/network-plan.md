@@ -90,3 +90,30 @@ Der aktuelle Netzwerkstand zeigt, dass:
 2. zusaetzliche Screenshots und Ausgaben dokumentieren
 3. spaeter Sensor-VM in dasselbe Lab-Netz integrieren
 4. Verkehr anschliessend parallel fuer IDS-Auswertung nutzbar machen
+
+## 16.04: Debian-Sensor im Lab-Netz
+
+Die Debian-basierte Sensor-VM wurde erfolgreich in das bestehende Host-Only-Netz integriert. Das Host-Only-Interface `enp0s3` erhielt die statische Adresse `192.168.56.104/24`. Zusätzlich bleibt das NAT-Interface `enp0s8` für allgemeinen Internetzugang aktiv.
+
+### Erreichbarkeit des Sensors
+
+Die Verbindung vom Sensor zu den bestehenden Systemen wurde erfolgreich geprüft:
+
+- Sensor -> Kali (`192.168.56.102`): erfolgreich
+- Sensor -> Windows (`192.168.56.103`): erfolgreich
+
+### Paketmitschnitt auf dem Sensor
+
+Auf dem Host-Only-Interface `enp0s3` wurde ein Mitschnitt des Verkehrs zwischen Kali und dem Windows-Victim erstellt.
+
+Verwendete Datei:
+- `/tmp/sensor-test2.pcap`
+
+Die Auswertung mit `tshark` zeigte sichtbaren Verkehr zwischen Kali und Windows, darunter:
+
+- ICMP Echo Request
+- ICMP Echo Reply
+- ARP Request
+- ARP Reply
+
+Damit ist nachgewiesen, dass die Sensor-VM den Verkehr im internen Lab-Netz erfolgreich beobachten und mitschneiden kann.

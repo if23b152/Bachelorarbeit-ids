@@ -1,6 +1,6 @@
 # Notes
 
-## Aktueller praktischer Stand
+## praktischer Stand
 
 Die bisherige praktische Umsetzung zeigt, dass die VM-basierte Laborumgebung grundsaetzlich funktioniert. Als Angreifersystem ist eine Kali-Linux-VM vorhanden. Zusaetzlich wurde ein erstes Windows-Zielsystem erfolgreich eingerichtet und in Betrieb genommen.
 
@@ -17,3 +17,9 @@ Zusaetzlich wurde ein erster Paketmitschnitt erstellt. Im Mitschnitt waren ICMP-
 3. Debian-Sensor-VM vorbereiten
 4. spaeter Ubuntu als zweites Victim ergaenzen
 5. Snort, Suricata und Zeek in Standardkonfiguration vorbereiten
+
+## 16.04: praktischer Stand
+
+Die praktische Laborumgebung wurde weiter ausgebaut. Neben der bereits vorhandenen Kali-Linux-VM als Angreifersystem und der Windows-VM als erstem Zielsystem wurde nun zusätzlich eine Debian-basierte Sensor-VM eingerichtet. Diese wurde über ein Host-Only-Netzwerk in dieselbe interne Testumgebung integriert und zusätzlich mit einem NAT-Adapter für allgemeinen Netzwerkzugang ausgestattet.
+
+Dem Host-Only-Interface der Sensor-VM wurde eine statische IP-Adresse zugewiesen. Anschließende Verbindungstests zeigten, dass sowohl Kali als auch das Windows-Zielsystem vom Sensor aus erreichbar sind. Darüber hinaus konnte auf dem Sensor erfolgreich ein Paketmitschnitt des Verkehrs zwischen Kali und Windows erstellt werden. In der Auswertung des Mitschnitts waren ICMP- und ARP-Pakete sichtbar. Damit ist nachgewiesen, dass der Sensor den internen Testverkehr beobachten kann und die technische Grundlage für die spätere Installation und Evaluierung von Snort, Suricata und Zeek vorhanden ist.

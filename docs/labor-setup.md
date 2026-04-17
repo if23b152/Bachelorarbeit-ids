@@ -34,3 +34,7 @@ Die naechsten praktischen Schritte sind:
 3. Debian-basierte Sensor-VM aufsetzen
 4. spaeter Ubuntu als zweites Zielsystem ergaenzen
 5. danach Snort, Suricata und Zeek in Standardkonfiguration vorbereiten
+
+## 16.04: Erweiterung der Laborumgebung
+
+Die Laborumgebung wurde um eine Debian-basierte Sensor-VM erweitert. Damit besteht der aktuelle Aufbau aus einer Kali-Linux-VM als Angreifersystem, einer Windows-VM als erstem Zielsystem sowie einer separaten Debian-VM als Sensor. Der Sensor dient dazu, den Verkehr zwischen Angreifer- und Zielsystem passiv zu beobachten und bildet die Grundlage für die spätere Installation und Evaluierung von Snort, Suricata und Zeek.
