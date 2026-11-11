@@ -1,40 +1,32 @@
-# Labor Setup
+# Laboraufbau
 
-## Ziel der Laborumgebung
+Die praktische Untersuchung läuft in einer **VirtualBox**-Umgebung. Ziel ist ein kontrollierter, reproduzierbarer Rahmen, in dem dieselben Angriffe mehrfach ausgeführt und die Reaktionen von Snort, Suricata und Zeek unter identischen Bedingungen verglichen werden können.
 
-Fuer die praktische Umsetzung der Bachelorarbeit wird eine VM-basierte Laborumgebung verwendet. Ziel ist es, reproduzierbare Angriffsszenarien in einer kontrollierten Umgebung auszufuehren und spaeter die Reaktion der IDS-Loesungen Snort, Suricata und Zeek systematisch zu vergleichen.
+## Rollen
 
-## Rollenverteilung der Systeme
+| Rolle | System | Aufgabe |
+|---|---|---|
+| Angreifer | Kali Linux 2025.4 | Scans und Exploit-Versuche (Metasploit, Nmap, tcpdump, TShark) |
+| Ziel 1 | Windows 11 (64-bit) | Fokus der exploitnahen Auswertung (SMB, Port 445) |
+| Ziel 2 | Ubuntu 26.04 (64-bit) | allgemeiner Aufbau und Baseline-Tests |
+| Sensor | Debian 13.4 (64-bit) | passive Beobachtung; Snort, Suricata und Zeek in getrennten Läufen |
 
-Die Laborumgebung ist in getrennte Rollen aufgeteilt:
+Angreifer, Ziele und Sensor sind bewusst getrennte VMs. Der Sensor ist nie selbst Angriffsziel, sondern liest den Verkehr im Labornetz nur mit. So bleibt der Vergleich methodisch sauber.
 
-- **Kali Linux VM**: Angreifersystem
-- **Windows VM**: erstes Zielsystem (Victim)
-- **Debian VM**: geplante Sensor-VM fuer Snort, Suricata und Zeek
-- **Ubuntu VM**: spaeteres zweites Zielsystem (Linux-Victim)
+## Warum VMs statt Container?
 
-Diese Trennung wurde bewusst gewaehlt, um Zielsysteme und Detektionssysteme nicht zu vermischen. Dadurch bleibt der Vergleich methodisch sauber und nachvollziehbar.
+VMs emulieren vollständige Betriebssysteme und bieten damit eine realistische Angriffsfläche. Außerdem lassen sich Windows- und Linux-Ziele im selben Aufbau betreiben – für einen IDS-Vergleich mit echten Exploits ist das geeigneter als ein containerbasierter Aufbau.
 
-## Aktueller Stand
+## Aufbau in Schritten
 
-Der Aufbau der Laborumgebung erfolgt schrittweise. Zum aktuellen Stand sind die Kali-Linux-VM als Angreifersystem und eine Windows-VM als erstes Zielsystem erfolgreich eingerichtet. Beide Systeme wurden mit NAT fuer allgemeinen Netzwerkzugang sowie zusaetzlich mit einem separaten Host-Only-Netzwerk fuer interne Lab-Kommunikation konfiguriert.
+1. Kali als Angreifer und Windows 11 als erstes Ziel eingerichtet, jeweils mit NAT- und Host-Only-Adapter
+2. Erreichbarkeit per Ping und `nmap -sn` geprüft, erster Baseline-Mitschnitt
+3. Debian-Sensor-VM ergänzt, statische Host-Only-IP `192.168.56.104/24` auf `enp0s3`
+4. Mitschnitt auf dem Sensor mit `tcpdump`/`tshark` verifiziert (ARP, ICMP, TCP sichtbar)
+5. Ubuntu 26.04 als zweites Ziel ergänzt
+6. Suricata → Snort → Zeek nacheinander installiert und mit lokalen Testregeln verifiziert
+7. Messläufe: SYN-Scan und zwei SMB-Exploit-Szenarien gegen Windows
 
-Damit ist eine erste stabile Kommunikationsbasis geschaffen, auf der die naechsten praktischen Schritte der Arbeit aufbauen koennen. Ein Linux-Zielsystem sowie die eigentliche Sensor-VM werden in den naechsten Schritten ergaenzt.
+Vor jedem Messlauf werden VM-Snapshots verwendet, damit alle Läufe vom selben Zustand starten.
 
-## Begruendung fuer den VM-basierten Aufbau
-
-Die Testumgebung wird bewusst auf Basis virtueller Maschinen umgesetzt. Dadurch lassen sich vollstaendige Betriebssysteme mit realistischer Angriffsflaeche betreiben. Ausserdem koennen Windows- und Linux-Zielsysteme sinnvoll in denselben Aufbau integriert werden. Fuer den vorgesehenen Vergleich der IDS-Loesungen ist dies geeigneter als ein containerbasierter Aufbau.
-
-## Naechste Schritte
-
-Die naechsten praktischen Schritte sind:
-
-1. Windows-Victim vollstaendig dokumentieren
-2. Snapshot der aktuellen Windows-VM erstellen
-3. Debian-basierte Sensor-VM aufsetzen
-4. spaeter Ubuntu als zweites Zielsystem ergaenzen
-5. danach Snort, Suricata und Zeek in Standardkonfiguration vorbereiten
-
-## 16.04: Erweiterung der Laborumgebung
-
-Die Laborumgebung wurde um eine Debian-basierte Sensor-VM erweitert. Damit besteht der aktuelle Aufbau aus einer Kali-Linux-VM als Angreifersystem, einer Windows-VM als erstem Zielsystem sowie einer separaten Debian-VM als Sensor. Der Sensor dient dazu, den Verkehr zwischen Angreifer- und Zielsystem passiv zu beobachten und bildet die Grundlage für die spätere Installation und Evaluierung von Snort, Suricata und Zeek.
+Netzwerkdetails: [network-plan.md](network-plan.md)

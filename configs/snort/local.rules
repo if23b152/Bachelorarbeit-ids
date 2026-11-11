@@ -1,0 +1,8 @@
+# Lokale Testregeln für Snort 3 im Host-Only-Labornetz
+# Kali (Angreifer): 192.168.56.102 | Windows: .103 | Ubuntu: .105
+
+# ICMP Echo Request (Ping) von Kali auf die Zielsysteme
+alert icmp 192.168.56.102 any -> [192.168.56.103,192.168.56.105] any ( msg:"LOCAL ICMP ping from Kali to victim"; itype:8; sid:1000001; rev:1; )
+
+# TCP-SYN (Scan- bzw. Verbindungsaufbau) von Kali auf die Zielsysteme
+alert tcp 192.168.56.102 any -> [192.168.56.103,192.168.56.105] any ( msg:"LOCAL TCP SYN scan from Kali to victim"; flags:S; sid:1000002; rev:1; )

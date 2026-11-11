@@ -1,119 +1,34 @@
-# Network Plan
+# Netzplan
 
-## Netzwerkziel
+Jede VM hat zwei Adapter:
 
-Das Netzwerk der Laborumgebung soll einerseits normalen Internetzugang fuer Installation und Updates ermoeglichen und andererseits ein getrenntes internes Testnetz fuer kontrollierten und reproduzierbaren Verkehr zwischen Angreifer- und Zielsystem bereitstellen.
+| Adapter | Modus | Zweck |
+|---|---|---|
+| 1 | NAT | Internetzugang für Installation und Updates – **kein** Testverkehr |
+| 2 | Host-Only (`192.168.56.0/24`) | internes Testnetz für alle Scans und Exploits |
 
-## Verwendete Netzwerkmodi
+Die Trennung verhindert, dass Hintergrundverkehr aus dem Internet die Messungen beeinflusst.
 
-Sowohl Kali als auch Windows wurden mit zwei Netzwerkadaptern betrieben:
+## Adressen im Host-Only-Netz
 
-- **Adapter 1: NAT**
-  - fuer allgemeinen Internetzugang
-  - fuer Downloads, Updates und Standardnetzwerkzugriffe
+| System | IP | Interface |
+|---|---|---|
+| Kali Linux (Angreifer) | `192.168.56.102` | – |
+| Windows 11 (Ziel 1) | `192.168.56.103` | – |
+| Debian Sensor | `192.168.56.104/24` (statisch) | `enp0s3` (NAT: `enp0s8`) |
+| Ubuntu 26.04 (Ziel 2) | `192.168.56.105` | – |
 
-- **Adapter 2: Host-Only**
-  - fuer internes Testnetz
-  - fuer reproduzierbaren Verkehr zwischen Kali und Windows
-  - fuer spaetere Paketmitschnitte und IDS-Auswertung
+## Verifikation
 
-## Aktuelle IP-Konfiguration
+| Test | Ergebnis |
+|---|---|
+| Ping Kali ↔ Windows | erfolgreich in beide Richtungen |
+| Ping Sensor → Kali / Windows | erfolgreich |
+| `nmap -sn 192.168.56.103` | Windows als aktiver Host erkannt |
+| `nmap -sV 192.168.56.103` | alle 1000 Standard-TCP-Ports `filtered` → Baseline der Windows-Standardkonfiguration |
+| Mitschnitt auf Kali (`windows-baseline.pcap`) | ICMP Echo Request/Reply, ARP Request/Reply |
+| Mitschnitt auf dem Sensor (`sensor-test2.pcap`, `enp0s3`) | ICMP, ARP und TCP zwischen Kali und den Zielen sichtbar |
 
-### Kali Linux
-- NAT: `10.0.2.15`
-- Host-Only: `192.168.56.102`
+**Unterschied der Ziele:** Windows beantwortet SYN-Pakete nicht (gefiltert), Ubuntu antwortet mit `RST/ACK` (geschlossene Ports). Das ist bereits im Sensor-Mitschnitt sichtbar und erklärt die unterschiedlichen `conn_state`-Werte in Zeek.
 
-### Windows Victim
-- NAT: `10.0.2.15`
-- Host-Only: `192.168.56.103`
-
-## Kommunikationstest
-
-Die Erreichbarkeit zwischen Kali und Windows wurde erfolgreich geprueft.
-
-### Ping-Tests
-- Kali -> Windows: erfolgreich
-- Windows -> Kali: erfolgreich
-
-Die ICMP-Kommunikation funktioniert damit in beide Richtungen ueber das Host-Only-Netzwerk.
-
-## Host Discovery
-
-Ein erster Nmap-Host-Discovery-Scan wurde erfolgreich durchgefuehrt:
-
-- `nmap -sn 192.168.56.103`
-
-Das Windows-System wurde dabei korrekt als aktiver Host erkannt.
-
-## Service-Scan / Baseline
-
-Ein anschliessender Service-Scan mit:
-
-- `nmap -sV 192.168.56.103`
-
-ergab folgendes Baseline-Ergebnis:
-
-- Host ist erreichbar
-- alle 1000 standardmaessig gescannten TCP-Ports waren `filtered`
-- es wurden aktuell keine offen identifizierbaren TCP-Dienste festgestellt
-
-Dieses Ergebnis wird als **Baseline der aktuellen Windows-Standardkonfiguration** dokumentiert.
-
-## Paketmitschnitt
-
-Zusaetzlich wurde ein erster Paketmitschnitt auf Kali durchgefuehrt. Dabei wurde der Verkehr zwischen Kali und Windows auf dem Host-Only-Interface aufgezeichnet.
-
-Verwendeter Mitschnitt:
-- `windows-baseline.pcap`
-
-Im Mitschnitt waren insbesondere sichtbar:
-
-- ICMP Echo Request
-- ICMP Echo Reply
-- ARP Request
-- ARP Reply
-
-Damit ist nachgewiesen, dass nicht nur Kommunikation erzeugt, sondern diese auch erfolgreich erfasst und spaeter ausgewertet werden kann.
-
-## Bedeutung des aktuellen Stands
-
-Der aktuelle Netzwerkstand zeigt, dass:
-
-- die grundlegende Kommunikationsbasis zwischen Kali und Windows funktioniert
-- kontrollierter Testverkehr ueber das Host-Only-Netz erzeugt werden kann
-- ein Mitschnitt des Verkehrs moeglich ist
-- die Umgebung damit fuer die naechsten praktischen Schritte vorbereitet ist
-
-## Naechste Netzwerkschritte
-
-1. Mitschnitt-Dateien strukturiert im Repository ablegen
-2. zusaetzliche Screenshots und Ausgaben dokumentieren
-3. spaeter Sensor-VM in dasselbe Lab-Netz integrieren
-4. Verkehr anschliessend parallel fuer IDS-Auswertung nutzbar machen
-
-## 16.04: Debian-Sensor im Lab-Netz
-
-Die Debian-basierte Sensor-VM wurde erfolgreich in das bestehende Host-Only-Netz integriert. Das Host-Only-Interface `enp0s3` erhielt die statische Adresse `192.168.56.104/24`. Zusätzlich bleibt das NAT-Interface `enp0s8` für allgemeinen Internetzugang aktiv.
-
-### Erreichbarkeit des Sensors
-
-Die Verbindung vom Sensor zu den bestehenden Systemen wurde erfolgreich geprüft:
-
-- Sensor -> Kali (`192.168.56.102`): erfolgreich
-- Sensor -> Windows (`192.168.56.103`): erfolgreich
-
-### Paketmitschnitt auf dem Sensor
-
-Auf dem Host-Only-Interface `enp0s3` wurde ein Mitschnitt des Verkehrs zwischen Kali und dem Windows-Victim erstellt.
-
-Verwendete Datei:
-- `/tmp/sensor-test2.pcap`
-
-Die Auswertung mit `tshark` zeigte sichtbaren Verkehr zwischen Kali und Windows, darunter:
-
-- ICMP Echo Request
-- ICMP Echo Reply
-- ARP Request
-- ARP Reply
-
-Damit ist nachgewiesen, dass die Sensor-VM den Verkehr im internen Lab-Netz erfolgreich beobachten und mitschneiden kann.
+Screenshots: [`results/raw/ip_a.png`](../results/raw/ip_a.png), [`results/raw/tshark.png`](../results/raw/tshark.png)

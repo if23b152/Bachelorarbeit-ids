@@ -24,12 +24,11 @@ venv/
 *.pcap
 *.pcapng
 
-# Ergebnisse koennen lokal bleiben, Platzhalter werden versioniert
+# Rohdaten bleiben lokal; Platzhalter, Screenshots und Ergebnistabellen werden versioniert
 results/raw/*
 results/processed/*
-results/tables/*
 results/screenshots/*
 !results/raw/.gitkeep
+!results/raw/*.png
 !results/processed/.gitkeep
-!results/tables/.gitkeep
 !results/screenshots/.gitkeep

@@ -1,0 +1,10 @@
+scenario,ids,cpu_percent,mem_percent,rss_kb,vsz_kb
+syn_scan,suricata,5.0,11.0,557584,1073332
+syn_scan,snort,6.1,0.8,43796,127012
+syn_scan,zeek,1.3,5.2,265544,1192132
+windows_w01,suricata,15.4,10.6,536612,1055836
+windows_w01,snort,6.0,0.8,43964,127012
+windows_w01,zeek,1.3,5.1,261088,1187564
+windows_w02,suricata,15.4,10.6,536612,1055836
+windows_w02,snort,6.0,0.8,43964,127012
+windows_w02,zeek,0.8,5.1,260988,1187700

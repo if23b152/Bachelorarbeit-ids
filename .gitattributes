@@ -1,0 +1,6 @@
+* text=auto
+*.sh text eol=lf
+*.rules text eol=lf
+*.lua text eol=lf
+*.zeek text eol=lf
+*.png binary

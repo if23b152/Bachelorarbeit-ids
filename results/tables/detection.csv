@@ -1,0 +1,10 @@
+scenario,ids,alert,suspicious_log,timing,visible_in,notes
+syn_scan,suricata,yes,yes,realtime,fast.log;eve.json,">2000 alert events; extra DHCP background alert"
+syn_scan,snort,yes,yes,realtime,alert_fast,"one alert per target port"
+syn_scan,zeek,no,yes,realtime (log),conn.log,"conn_state REJ/RSTO"
+windows_w01,suricata,yes,yes,realtime,fast.log;eve.json,"local TCP rule on SMB 445"
+windows_w01,snort,yes,yes,realtime,alert_fast,"2 alerts, local TCP rule 445"
+windows_w01,zeek,no,yes,realtime (log),conn.log,"445/tcp connections"
+windows_w02,suricata,yes,yes,realtime,fast.log;eve.json,"TCP rule + NTLM negotiate/challenge/auth alerts; DHCP background alert"
+windows_w02,snort,yes,yes,realtime,alert_fast,"1 alert, local TCP rule 445"
+windows_w02,zeek,no,yes,realtime (log),conn.log;ntlm.log,"NTLM authentication logged"
