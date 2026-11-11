@@ -1,14 +1,14 @@
 # Zeek
 
-| Eigenschaft | Wert |
+| Property | Value |
 |---|---|
 | Version | 9.0.0-dev.154 |
-| Installation | aus dem Quellcode kompiliert, > 90 min (davon `make` ca. 70 min) |
-| Skripte | Standard-Skripte, siehe [`local.zeek`](local.zeek); keine eigenen Detektionsskripte |
-| Interface | `enp0s3` (Host-Only) |
-| Logpfad | eigener Ordner pro Lauf, z. B. `/opt/zeek-win-test1`, `/opt/zeek-win-test2` |
+| Installation | compiled from source, > 90 min (of which `make` approx. 70 min) |
+| Scripts | default scripts, see [`local.zeek`](local.zeek); no custom detection scripts |
+| Interface | `enp0s3` (host-only) |
+| Log path | separate folder per run, e.g. `/opt/zeek-win-test1`, `/opt/zeek-win-test2` |
 
-## Einrichtung (Kurzfassung)
+## Setup (short version)
 
 ```bash
 sudo apt install cmake make gcc g++ flex bison libpcap-dev libssl-dev \
@@ -20,23 +20,23 @@ export PATH=/opt/zeek/bin:$PATH
 
 ```bash
 sudo mkdir -p /opt/zeek-win-test1 && cd /opt/zeek-win-test1
-sudo zeek -i enp0s3 /pfad/zu/configs/zeek/local.zeek
-# Auswertung
+sudo zeek -i enp0s3 /path/to/configs/zeek/local.zeek
+# Analysis
 zeek-cut ts id.orig_h id.resp_h id.resp_p proto conn_state < conn.log
 ```
 
-## Erzeugte Logs
+## Generated logs
 
-| Lauf | Dateien |
+| Run | Files |
 |---|---|
-| Baseline / SYN-Scan | `conn.log`, `dhcp.log`, `dns.log`, `packet_filter.log`, `reporter.log` |
+| Baseline / SYN scan | `conn.log`, `dhcp.log`, `dns.log`, `packet_filter.log`, `reporter.log` |
 | Windows W-01 (EternalBlue) | `conn.log`, `dhcp.log`, `dns.log`, `packet_filter.log`, `reporter.log` |
 | Windows W-02 (psexec) | `conn.log`, `dhcp.log`, **`ntlm.log`**, `packet_filter.log`, `reporter.log` |
 
-Ein `notice.log` entstand in keinem Lauf – Zeek erzeugt ohne zusätzliche Skripte keine Alerts.
+No `notice.log` was produced in any run – without additional scripts Zeek does not generate alerts.
 
-## Beobachtungen
+## Observations
 
-- SYN-Scan im `conn.log` über `conn_state` `REJ`/`RSTO` klar erkennbar – kompakt statt tausender Alerts.
-- `ntlm.log` macht den fehlgeschlagenen SMB-Login auf Protokollebene nachvollziehbar.
-- Niedrigste CPU-Last (0,8–1,3 %), Speicher ~5 % (~260 MB RSS).
+- SYN scan clearly recognisable in `conn.log` via `conn_state` `REJ`/`RSTO` – compact instead of thousands of alerts.
+- `ntlm.log` makes the failed SMB login traceable at protocol level.
+- Lowest CPU load (0.8–1.3 %), memory ~5 % (~260 MB RSS).

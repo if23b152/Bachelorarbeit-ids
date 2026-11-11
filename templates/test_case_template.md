@@ -1,23 +1,23 @@
-# Testfall: TC-XXX
+# Test case: TC-XXX
 
-## Ziel
+## Goal
 
-Kurze Beschreibung des Testziels.
+Short description of what the test is meant to show.
 
-## Voraussetzungen
+## Prerequisites
 
 - 
 
-## Schritte
+## Steps
 
 1. 
 2. 
 3. 
 
-## Erwartetes Ergebnis
+## Expected result
 
 - 
 
-## Hinweise
+## Notes
 
 - 

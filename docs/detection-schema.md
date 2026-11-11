@@ -1,66 +1,49 @@
-# Detection Schema
+# Detection schema
 
-## Ziel des Schemas
+## Purpose
 
-Fuer jeden Testfall soll ein einheitliches Bewertungsschema verwendet werden, damit die Ergebnisse von Snort, Suricata und Zeek systematisch und nachvollziehbar verglichen werden koennen.
+The same evaluation scheme is used for every test case so that the results of Snort, Suricata and Zeek can be compared systematically and traceably.
 
-## Hauptkriterien
+## Main criteria
 
-Fuer jeden Angriff bzw. Test wird untersucht:
+For every attack or test the following is examined:
 
-1. **Wird ein Alert ausgeloest?**
-   - ja / nein
+1. **Is an alert raised?** – yes / no
+2. **Is there a suspicious log entry?** – yes / no
+3. **How fast is the detection?** – real time / delayed / only visible in the logs afterwards
+4. **Was the attack detected?** – detected / not detected
+5. **Was the attack technically successful?** – successful / not successful
 
-2. **Gibt es einen verdaechtigen Log-Eintrag?**
-   - ja / nein
+Point 5 is supplementary and not the focus. The focus of the thesis is detection.
 
-3. **Wie schnell erfolgt die Erkennung?**
-   - in Echtzeit
-   - mit Verzoegerung
-   - erst nachtraeglich in Logs sichtbar
-
-4. **Wurde der Angriff erkannt oder nicht erkannt?**
-   - erkannt
-   - nicht erkannt
-
-5. **War der Angriff technisch erfolgreich oder nicht?**
-   - erfolgreich
-   - nicht erfolgreich
-
-Dieser Punkt ist ergaenzend relevant, steht aber nicht im Mittelpunkt. Im Fokus der Arbeit steht die Detektion.
-
-## Prioritaet der Beobachtung
-
-Die Reihenfolge der Bedeutung ist:
+## Priority of observations
 
 1. Alert
-2. verdaechtiger Log-Eintrag
-3. Zeitverhalten der Erkennung
+2. Suspicious log entry
+3. Timing of the detection
 
-Diese Priorisierung ist wichtig, weil insbesondere Zeek nicht immer wie klassische IDS-Systeme ueber eindeutige Alerts arbeitet.
+This order matters because Zeek in particular does not work with clear alerts like classic IDS.
 
-## Zusaetzliche Vergleichspunkte
+## Additional comparison points
 
-Neben den Hauptkriterien werden spaeter zusaetzlich betrachtet:
+- differences between Windows and Linux targets
+- differences between default and custom configuration
+- differences in CPU and RAM usage
+- traceability and analysability of the results
 
-- Unterschiede zwischen Windows und Linux
-- Unterschiede zwischen Standardkonfiguration und angepasster Konfiguration
-- Unterschiede in CPU- und RAM-Auslastung
-- Nachvollziehbarkeit und Auswertbarkeit der Ergebnisse
+## Documentation per test case
 
-## Dokumentation pro Testfall
+At least the following is recorded for every test:
 
-Fuer jeden Test sollen mindestens folgende Punkte festgehalten werden:
-
-- Test-ID
-- Datum
-- Zielsystem
-- Angriff / Scan
-- verwendetes Tool
-- IDS-Konfiguration
-- Alert ja/nein
-- verdaechtiger Log ja/nein
-- Zeitverhalten
-- erkannt / nicht erkannt
-- technisch erfolgreich ja/nein
-- Bemerkungen
+- test ID
+- date
+- target system
+- attack / scan
+- tool used
+- IDS configuration
+- alert yes/no
+- suspicious log yes/no
+- timing
+- detected / not detected
+- technically successful yes/no
+- remarks

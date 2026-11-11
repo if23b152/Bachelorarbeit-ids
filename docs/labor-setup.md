@@ -1,32 +1,32 @@
-# Laboraufbau
+# Lab setup
 
-Die praktische Untersuchung läuft in einer **VirtualBox**-Umgebung. Ziel ist ein kontrollierter, reproduzierbarer Rahmen, in dem dieselben Angriffe mehrfach ausgeführt und die Reaktionen von Snort, Suricata und Zeek unter identischen Bedingungen verglichen werden können.
+The practical study runs in a **VirtualBox** environment. The aim is a controlled, reproducible setting in which the same attacks can be executed repeatedly and the reactions of Snort, Suricata and Zeek compared under identical conditions.
 
-## Rollen
+## Roles
 
-| Rolle | System | Aufgabe |
+| Role | System | Purpose |
 |---|---|---|
-| Angreifer | Kali Linux 2025.4 | Scans und Exploit-Versuche (Metasploit, Nmap, tcpdump, TShark) |
-| Ziel 1 | Windows 11 (64-bit) | Fokus der exploitnahen Auswertung (SMB, Port 445) |
-| Ziel 2 | Ubuntu 26.04 (64-bit) | allgemeiner Aufbau und Baseline-Tests |
-| Sensor | Debian 13.4 (64-bit) | passive Beobachtung; Snort, Suricata und Zeek in getrennten Läufen |
+| Attacker | Kali Linux 2025.4 | scans and exploit attempts (Metasploit, Nmap, tcpdump, TShark) |
+| Target 1 | Windows 11 (64-bit) | focus of the exploit-oriented evaluation (SMB, port 445) |
+| Target 2 | Ubuntu 26.04 (64-bit) | general setup and baseline tests |
+| Sensor | Debian 13.4 (64-bit) | passive monitoring; Snort, Suricata and Zeek in separate runs |
 
-Angreifer, Ziele und Sensor sind bewusst getrennte VMs. Der Sensor ist nie selbst Angriffsziel, sondern liest den Verkehr im Labornetz nur mit. So bleibt der Vergleich methodisch sauber.
+Attacker, targets and sensor are deliberately separate VMs. The sensor is never itself a target; it only listens to the traffic in the lab network. This keeps the comparison methodologically clean.
 
-## Warum VMs statt Container?
+## Why VMs instead of containers?
 
-VMs emulieren vollständige Betriebssysteme und bieten damit eine realistische Angriffsfläche. Außerdem lassen sich Windows- und Linux-Ziele im selben Aufbau betreiben – für einen IDS-Vergleich mit echten Exploits ist das geeigneter als ein containerbasierter Aufbau.
+VMs emulate complete operating systems and therefore provide a realistic attack surface. They also allow Windows and Linux targets in the same setup – for an IDS comparison with real exploits this is more suitable than a container-based setup.
 
-## Aufbau in Schritten
+## Setup steps
 
-1. Kali als Angreifer und Windows 11 als erstes Ziel eingerichtet, jeweils mit NAT- und Host-Only-Adapter
-2. Erreichbarkeit per Ping und `nmap -sn` geprüft, erster Baseline-Mitschnitt
-3. Debian-Sensor-VM ergänzt, statische Host-Only-IP `192.168.56.104/24` auf `enp0s3`
-4. Mitschnitt auf dem Sensor mit `tcpdump`/`tshark` verifiziert (ARP, ICMP, TCP sichtbar)
-5. Ubuntu 26.04 als zweites Ziel ergänzt
-6. Suricata → Snort → Zeek nacheinander installiert und mit lokalen Testregeln verifiziert
-7. Messläufe: SYN-Scan und zwei SMB-Exploit-Szenarien gegen Windows
+1. Kali as attacker and Windows 11 as the first target, each with a NAT and a host-only adapter
+2. Reachability checked with ping and `nmap -sn`, first baseline capture
+3. Debian sensor VM added, static host-only IP `192.168.56.104/24` on `enp0s3`
+4. Capturing on the sensor verified with `tcpdump`/`tshark` (ARP, ICMP, TCP visible)
+5. Ubuntu 26.04 added as the second target
+6. Suricata → Snort → Zeek installed one after another and verified with local test rules
+7. Measurement runs: SYN scan and two SMB exploit scenarios against Windows
 
-Vor jedem Messlauf werden VM-Snapshots verwendet, damit alle Läufe vom selben Zustand starten.
+VM snapshots are used before every measurement run so that all runs start from the same state.
 
-Netzwerkdetails: [network-plan.md](network-plan.md)
+Network details: [network-plan.md](network-plan.md)

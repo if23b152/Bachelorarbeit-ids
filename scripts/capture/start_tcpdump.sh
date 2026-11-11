@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Schneidet den Verkehr auf dem Host-Only-Interface mit.
-# Nutzung: sudo ./start_tcpdump.sh [interface] [zielordner]
+# Captures the traffic on the host-only interface.
+# Usage: sudo ./start_tcpdump.sh [interface] [target_dir]
 set -euo pipefail
 
 INTERFACE="${1:-enp0s3}"
@@ -9,5 +9,5 @@ STAMP="$(date +%Y%m%d_%H%M%S)"
 
 mkdir -p "$OUT_DIR"
 
-echo "Starte tcpdump auf Interface $INTERFACE -> $OUT_DIR/capture_$STAMP.pcap (Strg+C beendet)"
+echo "Starting tcpdump on interface $INTERFACE -> $OUT_DIR/capture_$STAMP.pcap (Ctrl+C to stop)"
 tcpdump -i "$INTERFACE" -w "$OUT_DIR/capture_$STAMP.pcap" net 192.168.56.0/24

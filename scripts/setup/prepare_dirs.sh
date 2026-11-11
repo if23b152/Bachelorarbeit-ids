@@ -15,4 +15,4 @@ touch \
   "$ROOT_DIR/results/tables/.gitkeep" \
   "$ROOT_DIR/results/screenshots/.gitkeep"
 
-echo "Projektordner vorbereitet: $ROOT_DIR"
+echo "Project folders prepared: $ROOT_DIR"

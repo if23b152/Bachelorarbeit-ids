@@ -1,13 +1,14 @@
-# Test Result
+# Test result
 
-- Test-ID:
-- Datum:
-- Zielsystem:
-- Angriff / Scan:
+- Test ID:
+- Date:
+- Target system:
+- Attack / scan:
 - Tool:
-- Konfiguration:
-- Ergebnis:
-- Alert:
-- Verdaechtiger Log:
-- Zeitverhalten:
-- Bemerkungen:
+- IDS + configuration:
+- Result:
+- Alert (yes/no):
+- Suspicious log entry (yes/no):
+- Timing (real time / delayed / afterwards):
+- CPU / RAM:
+- Remarks:

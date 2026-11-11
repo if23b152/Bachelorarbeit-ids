@@ -1,25 +1,17 @@
-# Notes
+# Working notes
 
-## praktischer Stand
+## Practical progress
 
-Die bisherige praktische Umsetzung zeigt, dass die VM-basierte Laborumgebung grundsaetzlich funktioniert. Als Angreifersystem ist eine Kali-Linux-VM vorhanden. Zusaetzlich wurde ein erstes Windows-Zielsystem erfolgreich eingerichtet und in Betrieb genommen.
+The VM-based lab environment works. A Kali Linux VM serves as the attacker system, and a Windows VM was set up as the first target.
 
-Beide Systeme wurden ueber NAT sowie zusaetzlich ueber ein separates Host-Only-Netzwerk verbunden. Dadurch konnte ein internes Testnetz aufgebaut werden, das fuer kontrollierte und reproduzierbare Kommunikation zwischen Angreifer- und Zielsystem genutzt werden kann.
+Both systems were connected via NAT and additionally via a separate host-only network. This created an internal test network for controlled, reproducible communication between attacker and target.
 
-Die Erreichbarkeit wurde erfolgreich geprueft. Ping-Tests in beide Richtungen funktionierten. Ausserdem wurde das Windows-System ueber Nmap korrekt als aktiver Host erkannt. Ein Service-Scan zeigte, dass derzeit keine offen identifizierbaren Standard-TCP-Dienste sichtbar sind und alle 1000 gescannten Ports als `filtered` erschienen. Dieses Ergebnis wird als Baseline der aktuellen Windows-Standardkonfiguration interpretiert.
+Reachability was verified: ping tests worked in both directions, and Nmap correctly detected the Windows system as an active host. A service scan showed no openly identifiable default TCP services – all 1000 scanned ports appeared as `filtered`. This result is treated as the baseline of the default Windows configuration.
 
-Zusaetzlich wurde ein erster Paketmitschnitt erstellt. Im Mitschnitt waren ICMP- und ARP-Pakete sichtbar. Damit ist die grundlegende Kommunikations- und Mitschnittbasis der Laborumgebung bestaetigt.
+A first packet capture showed ICMP and ARP packets, confirming the basic communication and capture setup of the lab.
 
-## Naechste praktische Schritte
+## Sensor integration
 
-1. aktuellen Stand im Repository dokumentieren
-2. Snapshot der Windows-VM erstellen
-3. Debian-Sensor-VM vorbereiten
-4. spaeter Ubuntu als zweites Victim ergaenzen
-5. Snort, Suricata und Zeek in Standardkonfiguration vorbereiten
+The lab was then extended with a Debian-based sensor VM. It was integrated into the same internal host-only network and additionally given a NAT adapter for general network access.
 
-## 16.04: praktischer Stand
-
-Die praktische Laborumgebung wurde weiter ausgebaut. Neben der bereits vorhandenen Kali-Linux-VM als Angreifersystem und der Windows-VM als erstem Zielsystem wurde nun zusätzlich eine Debian-basierte Sensor-VM eingerichtet. Diese wurde über ein Host-Only-Netzwerk in dieselbe interne Testumgebung integriert und zusätzlich mit einem NAT-Adapter für allgemeinen Netzwerkzugang ausgestattet.
-
-Dem Host-Only-Interface der Sensor-VM wurde eine statische IP-Adresse zugewiesen. Anschließende Verbindungstests zeigten, dass sowohl Kali als auch das Windows-Zielsystem vom Sensor aus erreichbar sind. Darüber hinaus konnte auf dem Sensor erfolgreich ein Paketmitschnitt des Verkehrs zwischen Kali und Windows erstellt werden. In der Auswertung des Mitschnitts waren ICMP- und ARP-Pakete sichtbar. Damit ist nachgewiesen, dass der Sensor den internen Testverkehr beobachten kann und die technische Grundlage für die spätere Installation und Evaluierung von Snort, Suricata und Zeek vorhanden ist.
+The sensor's host-only interface received a static IP address. Connectivity tests showed that both Kali and the Windows target are reachable from the sensor. A packet capture of the traffic between Kali and Windows on the sensor showed ICMP and ARP packets. This proved that the sensor can observe the internal test traffic and laid the technical foundation for installing and evaluating Snort, Suricata and Zeek.

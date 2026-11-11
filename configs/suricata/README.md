@@ -1,18 +1,18 @@
 # Suricata
 
-| Eigenschaft | Wert |
+| Property | Value |
 |---|---|
-| Installation | Debian-Paket (`apt install suricata`), ca. 20 min inkl. Regel-Update |
-| Regelquellen | `suricata-update` (ET Open) → `/var/lib/suricata/rules/suricata.rules` + [`local.rules`](local.rules) |
-| Interface | `enp0s3` (Host-Only, 192.168.56.104) |
-| Outputs | `fast.log` (kompakte Alerts), `eve.json` (strukturiert, alle Event-Typen) |
-| Logpfad | `/var/log/suricata/` |
+| Installation | Debian package (`apt install suricata`), approx. 20 min incl. rule update |
+| Rule sources | `suricata-update` (ET Open) → `/var/lib/suricata/rules/suricata.rules` + [`local.rules`](local.rules) |
+| Interface | `enp0s3` (host-only, 192.168.56.104) |
+| Outputs | `fast.log` (compact alerts), `eve.json` (structured, all event types) |
+| Log path | `/var/log/suricata/` |
 
-## Einrichtung
+## Setup
 
 ```bash
 sudo apt install suricata
-sudo suricata-update                                     # ET-Open-Regeln laden
+sudo suricata-update                                     # load ET Open rules
 sudo cp local.rules /var/lib/suricata/rules/local.rules
 ```
 
@@ -34,15 +34,15 @@ af-packet:
 ```
 
 ```bash
-sudo suricata -T -c /etc/suricata/suricata.yaml          # Konfiguration testen
-sudo suricata -c /etc/suricata/suricata.yaml -i enp0s3   # Sensor starten
+sudo suricata -T -c /etc/suricata/suricata.yaml          # test the configuration
+sudo suricata -c /etc/suricata/suricata.yaml -i enp0s3   # start the sensor
 tail -f /var/log/suricata/fast.log
 jq 'select(.event_type=="alert") | .alert.signature' /var/log/suricata/eve.json | sort | uniq -c
 ```
 
-## Beobachtungen
+## Observations
 
-- Standardregeln alarmieren interne Ping-/SYN-Tests im Host-Only-Netz nicht zuverlässig → lokale Regeln nötig.
-- SYN-Scan: > 2000 Alert-Events in `eve.json` für ein einziges Scan-Szenario (keine Verdichtung).
-- Hintergrund-Alert `ET INFO Possible Kali Linux hostname in DHCP Request Packet` tritt unabhängig vom Testfall auf.
-- SMB/psexec: zusätzlich NTLM-Alerts (Negotiate, Challenge, Authenticate) aus dem ET-Regelsatz.
+- The default rules do not reliably alert internal ping/SYN tests in the host-only network → local rules required.
+- SYN scan: > 2000 alert events in `eve.json` for a single scan scenario (no aggregation).
+- Background alert `ET INFO Possible Kali Linux hostname in DHCP Request Packet` appears independently of the test case.
+- SMB/psexec: additional NTLM alerts (negotiate, challenge, authenticate) from the ET rule set.

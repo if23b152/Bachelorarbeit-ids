@@ -1,4 +1,4 @@
-# Betriebssysteme
+# Operating systems
 .DS_Store
 Thumbs.db
 desktop.ini
@@ -9,7 +9,7 @@ desktop.ini
 *.swp
 *.swo
 
-# Logs und temporäre Dateien
+# Logs and temporary files
 *.log
 *.tmp
 *.bak
@@ -20,11 +20,11 @@ __pycache__/
 .venv/
 venv/
 
-# Grosse Capture-Dateien optional lokal halten
+# Large capture files stay local
 *.pcap
 *.pcapng
 
-# Rohdaten bleiben lokal; Platzhalter, Screenshots und Ergebnistabellen werden versioniert
+# Raw data stays local; placeholders, screenshots and result tables are versioned
 results/raw/*
 results/processed/*
 results/screenshots/*

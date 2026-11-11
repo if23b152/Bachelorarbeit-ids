@@ -1,29 +1,29 @@
-# Testplan
+# Test plan
 
-## Grundsätze
+## Principles
 
-- ein Test nach dem anderen, jeweils mit **nur einem** aktiven IDS auf dem Sensor
-- vor jedem Lauf: VM-Snapshot, IDS neu starten, neuen Log-Ordner anlegen
-- klare Trennung zwischen Angriffsziel und Messsystem
-- jeder Lauf wird mit [`test_result_template.md`](../templates/test_result_template.md) dokumentiert
+- one test after another, always with **only one** active IDS on the sensor
+- before every run: VM snapshot, restart the IDS, create a new log folder
+- clear separation between attack target and measurement system
+- every run is documented with [`test_result_template.md`](../templates/test_result_template.md)
 
-## Phasen
+## Phases
 
-| Phase | Inhalt | Status |
+| Phase | Content | Status |
 |---|---|---|
-| 1 – Baseline | Ping, `nmap -sn`, `nmap -sV`, Paketmitschnitt auf Kali und Sensor | ✅ abgeschlossen |
-| 2 – Integration | Suricata, Snort, Zeek installieren; lokale Testregeln für ICMP und TCP-SYN | ✅ abgeschlossen |
-| 3 – Reconnaissance | TCP-SYN-Scan gegen Windows und Ubuntu, alle drei IDS | ✅ abgeschlossen |
-| 4 – Exploits Windows | W-01 EternalBlue-Probe, W-02 SMB psexec, alle drei IDS | ✅ abgeschlossen |
-| 5 – Exploits Linux | vergleichbare Szenarien gegen Ubuntu | ⏳ Ausblick |
-| 6 – Angepasste Konfiguration | Default- vs. Custom-Regeln, Thresholding, Zeek-Notices | ⏳ Ausblick |
+| 1 – Baseline | ping, `nmap -sn`, `nmap -sV`, packet capture on Kali and the sensor | ✅ done |
+| 2 – Integration | install Suricata, Snort, Zeek; local test rules for ICMP and TCP SYN | ✅ done |
+| 3 – Reconnaissance | TCP SYN scan against Windows and Ubuntu, all three IDS | ✅ done |
+| 4 – Windows exploits | W-01 EternalBlue probe, W-02 SMB psexec, all three IDS | ✅ done |
+| 5 – Linux exploits | comparable scenarios against Ubuntu | ⏳ outlook |
+| 6 – Custom configuration | default vs. custom rules, thresholding, Zeek notices | ⏳ outlook |
 
-## Ablauf eines Messlaufs
+## Flow of a measurement run
 
 ```text
-Sensor:  IDS starten  ──►  measure_resources.sh  ──►  (optional) start_tcpdump.sh
-Kali:                      Szenario ausführen
-Sensor:  IDS stoppen  ──►  collect_logs.sh  ──►  count_alerts.sh  ──►  Ergebnis dokumentieren
+Sensor:  start IDS  ──►  measure_resources.sh  ──►  (optional) start_tcpdump.sh
+Kali:                    run scenario
+Sensor:  stop IDS   ──►  collect_logs.sh  ──►  count_alerts.sh  ──►  document result
 ```
 
-Szenarien: [exploit-list.md](exploit-list.md) · Bewertung: [detection-schema.md](detection-schema.md) · Ergebnisse: [results.md](results.md)
+Scenarios: [exploit-list.md](exploit-list.md) · Evaluation: [detection-schema.md](detection-schema.md) · Results: [results.md](results.md)
