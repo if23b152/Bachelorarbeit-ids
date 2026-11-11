@@ -10,6 +10,7 @@
 ![Zeek](https://img.shields.io/badge/Zeek-9.0--dev-2ea043)
 ![Lab](https://img.shields.io/badge/Lab-VirtualBox-183a61)
 ![Typ](https://img.shields.io/badge/Bachelorarbeit-B.Sc.%20Informatik-6e40c9)
+[![CI](https://github.com/if23b152/Bachelorarbeit-ids/actions/workflows/ci.yml/badge.svg)](https://github.com/if23b152/Bachelorarbeit-ids/actions/workflows/ci.yml)
 
 </div>
 

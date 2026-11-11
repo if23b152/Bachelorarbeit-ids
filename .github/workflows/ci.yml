@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: ShellCheck
+        run: shellcheck -S error scripts/*/*.sh
+      - name: Validate CSV tables
+        run: |
+          for f in results/tables/*.csv; do
+            cols=$(head -1 "$f" | awk -F, '{print NF}')
+            awk -F, -v c="$cols" -v f="$f" 'NF<c {print f": line "NR" has "NF" columns, expected "c; bad=1} END {exit bad}' "$f"
+          done
