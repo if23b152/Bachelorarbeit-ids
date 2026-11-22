@@ -27,6 +27,4 @@ VMs emulate complete operating systems and therefore provide a realistic attack 
 6. Suricata → Snort → Zeek installed one after another and verified with local test rules
 7. Measurement runs: SYN scan and two SMB exploit scenarios against Windows
 
-VM snapshots are used before every measurement run so that all runs start from the same state.
-
 Network details: [network-plan.md](network-plan.md)

@@ -29,6 +29,6 @@ The separation prevents background traffic from the internet from influencing th
 | Capture on Kali (`windows-baseline.pcap`) | ICMP echo request/reply, ARP request/reply |
 | Capture on the sensor (`sensor-test2.pcap`, `enp0s3`) | ICMP, ARP and TCP between Kali and the targets visible |
 
-**Difference between the targets:** Windows does not answer SYN packets (filtered), Ubuntu answers with `RST/ACK` (closed ports). This is already visible in the sensor capture and explains the different `conn_state` values in Zeek.
+**Difference between the targets:** Windows does not answer SYN packets (filtered), Ubuntu answers with `RST/ACK` (closed ports). This difference is already visible in the sensor capture.
 
 Screenshots: [`results/raw/ip_a.png`](../results/raw/ip_a.png), [`results/raw/tshark.png`](../results/raw/tshark.png)
