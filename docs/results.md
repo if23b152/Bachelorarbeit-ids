@@ -2,7 +2,7 @@
 
 Summary: see the [README](../README.md#results). Raw tables as CSV in [`results/tables/`](../results/tables/).
 
-All values were recorded on the Debian sensor VM (`192.168.56.104`, interface `enp0s3`). Only **one** IDS was active per run. CPU/RAM are observed values of the IDS process (`ps`/`top`) during active sensor operation.
+All values were recorded on the Debian sensor VM (`192.168.56.104`, interface `enp0s3`). The IDS were run one after another. CPU/RAM are observed values of the IDS process (`watch ps aux`) during active sensor operation, as given in the thesis sections on the individual tests.
 
 ---
 
@@ -10,7 +10,7 @@ All values were recorded on the Debian sensor VM (`192.168.56.104`, interface `e
 
 | IDS | Method | Duration | Note |
 |---|---|---|---|
-| Suricata | Debian package | ~20 min | straightforward, rule base via `suricata-update` |
+| Suricata | Debian package | ~20 min | straightforward, current rule base |
 | Snort 3 | from source | > 30 min | no usable package for Debian 13 |
 | Zeek 9.0.0-dev | from source | > 90 min | `make` alone ~70 min |
 
@@ -33,7 +33,7 @@ All values were recorded on the Debian sensor VM (`192.168.56.104`, interface `e
 
 ### Zeek
 - No alert, but many entries in `conn.log` (Kali `.102` → Windows `.103`, spread over many ports).
-- The `conn_state` field (`REJ`, `RSTO`) shows rejected or reset connection attempts – the scan is immediately recognisable as a pattern.
+- The `conn_state` field (`REJ`, `RSTO`) shows rejected or reset connection attempts; the scan becomes visible through the connection states.
 - Resources: CPU ~1.3 %, MEM ~5.2 %, RSS 265,544 KB, VSZ 1,192,132 KB
 
 ---
@@ -42,11 +42,13 @@ All values were recorded on the Debian sensor VM (`192.168.56.104`, interface `e
 
 | Test | Attack | Result on the target |
 |---|---|---|
-| W-01 | Metasploit `MS17-010 EternalBlue` (probe/check) | no access, no session |
-| W-02 | Metasploit SMB `psexec` with username/password (NTLM) | `STATUS_ACCESS_DENIED`, no session |
+| W-01 | Metasploit `exploit/windows/smb/ms17_010_eternalblue` (`check`, then `exploit`) | target not vulnerable, no session |
+| W-02 | Metasploit `exploit/windows/smb/psexec` with username/password (NTLM) | `STATUS_ACCESS_DENIED`, no session |
+
+The local TCP rule of Suricata and Snort matches every SYN packet from Kali to a target. Its alerts on port 445 therefore report the connection attempt, not the exploit itself.
 
 ### Suricata
-- **W-01:** SMB-related connection attempts to the target are logged; the alert volume is much smaller than for the SYN scan and clearly attributable to the scenario.
+- **W-01:** 3 alerts: the local TCP rule twice for port 445 plus the DHCP background alert; the alert volume is much smaller than for the SYN scan and clearly attributable to the scenario.
 - **W-02:** besides the local TCP alert on port 445, several **NTLM alerts** appear:
   NTLM session setup request (negotiate) → NTLMv1 session setup response (challenge) → NTLM session setup request (authenticate).
   This makes the failed login traceable at protocol level.
@@ -74,10 +76,10 @@ All values were recorded on the Debian sensor VM (`192.168.56.104`, interface `e
 | Approach | signature/rule-based + protocol parsers | signature/rule-based | protocol/event-oriented |
 | Form of detection | alert | alert | structured log entry |
 | Strength | most differentiated alerts | most compact alerting, minimal RAM | most structured traceability, minimal CPU |
-| Weakness | highest RAM, alert flood during scans, background alerts | little protocol depth, rule-dependent | no alerts without scripts, laborious installation |
+| Weakness | highest RAM, many single alerts during the scan, background alerts | little protocol depth, rule-dependent | no classic alerts in this setup, most laborious installation |
 
 ## 4. Answers to the research questions
 
 - **RQ1 – detection performance:** all three systems made the SYN scan and both SMB exploit attempts visible – Suricata and Snort as alerts, Zeek as analysable log entries. The differences lie less in *whether* than in *how* (form, volume, protocol depth).
-- **RQ2 – evaluation matrix:** a matrix is useful and necessary, because comprehensibility, usability and performance matter as well as detection. Result (qualitative total): Suricata 21, Zeek 17, Snort 16.
-- **RQ3 – resources/usability:** Snort with the lowest memory usage, Zeek with the lowest CPU load, Suricata the most resource-intensive but the fastest to get running.
+- **RQ2 – evaluation matrix:** a matrix is useful, because comprehensibility, usability and performance matter as well as detection (ratings: [`scoring.csv`](../results/tables/scoring.csv)). The thesis does not name a single best system.
+- **RQ3 – resources/usability:** Snort with the lowest memory usage, Zeek with the lowest CPU load, Suricata the most resource-intensive but with the least installation effort.

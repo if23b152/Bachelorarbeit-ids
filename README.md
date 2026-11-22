@@ -16,12 +16,12 @@
 
 ---
 
-This repository accompanies a bachelor thesis that tested the three best-known open-source intrusion detection systems – **Snort**, **Suricata** and **Zeek** – against each other under identical conditions. It contains the complete lab setup, the configurations and rules used, helper scripts, the evaluation scheme and the results, prepared so that third parties can follow and repeat the experiments.
+This repository accompanies a bachelor thesis that tested three established open-source intrusion detection systems – **Snort**, **Suricata** and **Zeek** – against each other under identical conditions. It documents the lab setup, the configurations and rules used, the evaluation scheme and the results, so that third parties can follow the experiments.
 
 > **In short:** all three systems saw the attacks – but in completely different ways.
 > **Suricata** produces the richest alerts, **Snort** the most compact and resource-friendly alerting, **Zeek** the most structured, analysis-oriented view through logs. There is no single "best" IDS – the right choice depends on the use case.
 
-*The thesis itself was written in German; this repository documents its setup and results in English.*
+*The thesis itself was written in German; this repository summarises its setup and results in English. Test IDs such as W-01 and the scripts in `scripts/` were added for this repository and were not part of the measurements.*
 
 ## Contents
 
@@ -40,7 +40,7 @@ This repository accompanies a bachelor thesis that tested the three best-known o
 
 ## Research question
 
-> How do the open-source intrusion detection systems Snort, Suricata and Zeek differ in their detection performance for selected, reproducible network attack scenarios in a controlled lab environment?
+> How do the open-source intrusion detection systems Snort, Suricata and Zeek differ in their detection performance (detection rate and false positive rate) for selected, reproducible network attack scenarios in a controlled lab environment?
 
 | Sub-question | Content |
 |---|---|
@@ -93,19 +93,21 @@ In addition, CPU/RAM as well as installation/configuration effort, analysability
 
 | ID | Scenario | Target | Tool |
 |---|---|---|---|
-| B-01 | Ping / host discovery (`nmap -sn`) | Windows, Ubuntu | Nmap |
-| B-02 | Service scan (`nmap -sV`) | Windows, Ubuntu | Nmap |
+| B-01 | Ping / host discovery (`nmap -sn`) | Windows, Ubuntu | ping, Nmap |
+| B-02 | Service scan (`nmap -sV`) | Windows | Nmap |
 | S-01 | TCP SYN scan (`nmap -sS`) | Windows, Ubuntu | Nmap |
-| W-01 | MS17-010 EternalBlue (probe/check) against SMB 445 | Windows | Metasploit |
+| W-01 | MS17-010 EternalBlue (`check` and `exploit`) against SMB 445 | Windows | Metasploit |
 | W-02 | SMB authentication via `psexec` (NTLM) against SMB 445 | Windows | Metasploit |
 
-The goal was **not** a successful compromise, but whether and how the attack traffic is detected. Both Windows exploits failed (no session, `STATUS_ACCESS_DENIED`) – but left analysable traces on the network. See [`docs/exploit-list.md`](docs/exploit-list.md) and [`docs/testplan.md`](docs/testplan.md).
+The goal was **not** a successful compromise, but whether and how the attack traffic is detected. Neither Windows test created a session (W-01: target not vulnerable, W-02: `STATUS_ACCESS_DENIED`), but both left analysable traces on the network. See [`docs/exploit-list.md`](docs/exploit-list.md) and [`docs/testplan.md`](docs/testplan.md).
 
 ## Results
 
 Detailed evaluation per system: [`docs/results.md`](docs/results.md) · raw tables as CSV: [`results/tables/`](results/tables/)
 
 ### 1. TCP SYN scan (reconnaissance)
+
+The evaluation of this test describes the scan of the Ubuntu target for Suricata and the scan of the Windows target for Snort and Zeek.
 
 | Criterion | Suricata | Snort | Zeek |
 |---|---|---|---|
@@ -114,7 +116,7 @@ Detailed evaluation per system: [`docs/results.md`](docs/results.md) · raw tabl
 | Alert quality | > 2000 individual events, extra background alert (DHCP) | many individual messages per target port | clear connection records, `conn_state` `REJ`/`RSTO` |
 | Aggregation | 🔴 low – every packet separately | 🔴 low – every port separately | 🟢 high – tabular |
 
-**Finding:** signature-based IDS "shout" very loudly during broad scans – detection is reliable, but without thresholding the output is barely readable. Zeek summarises the same scan as a traceable connection table.
+**Finding:** Suricata and Snort reported the scan with the local rule, but as very many individual messages, which limits the practical usability. Zeek shows it as structured connection records.
 
 ### 2. Windows – exploit-oriented SMB scenario
 
@@ -128,11 +130,11 @@ Detailed evaluation per system: [`docs/results.md`](docs/results.md) · raw tabl
 | Timing | real time | real time | real time (analysed after the run) |
 | Background alerts | yes (Kali hostname in DHCP request) | no | no |
 
-**Finding:** for targeted exploit attempts the alert volume drops considerably and the results become easy to interpret. Suricata and Zeek decode the SMB/NTLM protocol and expose the phases of the failed login; Snort detects the access but is limited to the local TCP rule.
+**Finding:** compared with the scan, the alert volume is much smaller and easier to interpret. In W-02 Suricata shows the NTLM phases of the failed login as alerts and Zeek writes an additional `ntlm.log`; Snort is essentially limited to the local TCP rule. That local rule matches every SYN packet from Kali to a target, so it reports the connection attempt, not the exploit itself.
 
 ### 3. Resource usage
 
-Observed values of the IDS process on the sensor VM (`ps`/`top` during the run):
+Observed values of the IDS process on the sensor VM (`watch ps aux` during the run), as given in the sections on the individual tests:
 
 | Scenario | Metric | Suricata | Snort | Zeek |
 |---|---|---:|---:|---:|
@@ -141,7 +143,7 @@ Observed values of the IDS process on the sensor VM (`ps`/`top` during the run):
 | SYN scan | RSS | 557,584 KB | **43,796 KB** | 265,544 KB |
 | Windows W-01 | CPU | ~15.4 % | ~6.0 % | **~1.3 %** |
 | Windows W-01 | MEM | ~10.6 % | **~0.8 %** | ~5.1 % |
-| Windows W-02 | CPU | double-digit | ~6.0 % | **~0.8 %** |
+| Windows W-02 | CPU | ~15.4 % | ~6.0 % | **~0.8 %** |
 | Windows W-02 | MEM | ~10.6 % | **~0.8 %** | ~5.1 % |
 
 - **Snort**: by far the lowest memory footprint (~44 MB RSS)
@@ -159,17 +161,18 @@ Observed values of the IDS process on the sensor VM (`ps`/`top` during the run):
 | Analysability | 3 | 2 | **4** | Suricata: `fast.log` + `eve.json` · Snort: cluttered with many alerts · Zeek: structured logs |
 | Documentation / community | **5** | 4 | 4 | docs.suricata.io · snort.org + large community · docs.zeek.org |
 | Practical usability | **5** | 4 | 3 | Suricata ready to use immediately · Snort direct but rule-dependent · Zeek requires active log analysis |
-| **Total** | **21** | **16** | **17** | |
+
+The thesis deliberately does not name a single winner; the ratings are therefore not added up here.
 
 ## Conclusion and recommendation
 
-| If you need … | use | because |
-|---|---|---|
-| rich, protocol-aware **alerts** and a quick start | **Suricata** | most differentiated alerting (e.g. NTLM phases), `eve.json` for SIEM, installation via package manager |
-| **lightweight**, direct alerting on weak hardware | **Snort** | lowest RAM usage, alerts immediately in the terminal – but its value depends heavily on the rule base |
-| **forensics** / network security monitoring, reconstructing whole sequences | **Zeek** | structured, compact logs (`conn.log`, `ntlm.log`, …) at the lowest CPU load – but no alerts without custom scripts |
+There is no single best system; the choice depends on what is needed:
 
-The systems complement rather than replace each other: a combination of **Suricata (alerting) + Zeek (context/forensics)** covers both sides in practice.
+| If you need … | consider | because |
+|---|---|---|
+| differentiated **alerts** and a quick start | **Suricata** | most differentiated alert-based view (e.g. NTLM phases), structured `eve.json`, least installation effort |
+| **compact**, direct alerting | **Snort** | lowest memory usage, alerts immediately in the terminal – but its value depends heavily on the rules |
+| **traceability** of a whole sequence | **Zeek** | structured logs (`conn.log`, `ntlm.log`) at the lowest CPU load – but no classic alerts in this setup, the logs have to be analysed |
 
 ## Reproducing the experiments
 
@@ -181,15 +184,15 @@ git clone https://github.com/if23b152/Bachelorarbeit-ids.git && cd Bachelorarbei
 ./scripts/setup/prepare_dirs.sh
 
 # 2. Apply the IDS configuration (Suricata example)
-sudo cp configs/suricata/local.rules /var/lib/suricata/rules/local.rules
+sudo cp configs/suricata/local-bachelor.rules /var/lib/suricata/rules/
 sudo suricata -T -c /etc/suricata/suricata.yaml          # check the configuration
 
 # 3. Start the IDS on the host-only interface (only ONE IDS at a time)
-sudo suricata -c /etc/suricata/suricata.yaml -i enp0s3
-#   sudo snort -c configs/snort/snort.lua -R configs/snort/local.rules -i enp0s3 -A alert_fast
-#   sudo zeek -i enp0s3 configs/zeek/local.zeek     (inside the output folder, e.g. /opt/zeek-win-test1)
+sudo suricata -D -c /etc/suricata/suricata.yaml -i enp0s3
+#   sudo snort -c /usr/local/etc/snort.lua -R /usr/local/etc/rules/local.rules -i enp0s3 -A alert_fast
+#   sudo zeek -i enp0s3     (inside the output folder, e.g. /opt/zeek-win-test1)
 
-# 4. In parallel: measure resources and capture traffic
+# 4. In parallel: measure resources and capture traffic (the thesis used: watch -n 1 "ps aux | grep suricata")
 ./scripts/evaluation/measure_resources.sh suricata 60
 sudo ./scripts/capture/start_tcpdump.sh enp0s3
 
@@ -209,8 +212,8 @@ Every run is documented with [`templates/test_result_template.md`](templates/tes
 Bachelorarbeit-ids/
 ├── configs/            IDS configurations and local rules
 │   ├── snort/          snort.lua (minimal config) + local.rules
-│   ├── suricata/       local.rules + notes on suricata.yaml
-│   └── zeek/           local.zeek + notes on logs
+│   ├── suricata/       local-bachelor.rules + notes
+│   └── zeek/           notes on start and logs (no custom scripts)
 ├── docs/               lab setup, network plan, test plan, scenario list,
 │                       evaluation scheme and detailed results
 ├── results/
@@ -227,7 +230,8 @@ Bachelorarbeit-ids/
 ## Limitations and outlook
 
 - Detailed exploit evaluation only for the **Windows target**; Ubuntu was used for the setup and baseline.
-- Few repetitions per test case; CPU/RAM are **observed values**, not standardised measurement series.
+- More repetitions per test case would be a next step; CPU/RAM are **observed values**, not standardised measurement series.
+- False positive and detection **rates** were defined as criteria, but the evaluation is mainly qualitative (alert or log entry, timing, volume, protocol depth).
 - The value of Snort/Suricata depends heavily on the rule set – local test rules are not a complete representation of real attacks.
 
 Possible extensions: exploit scenarios against Linux, a systematic comparison of default vs. custom rules (incl. thresholding), Zeek scripts / notice framework, more repetitions, payload delivery and multi-stage attacks.
